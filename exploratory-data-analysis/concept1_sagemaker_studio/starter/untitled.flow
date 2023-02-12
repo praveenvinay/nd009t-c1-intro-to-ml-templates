@@ -1,0 +1,150 @@
+{
+  "metadata": {
+    "version": 1,
+    "disable_limits": false,
+    "instance_type": "ml.m5.4xlarge"
+  },
+  "parameters": [],
+  "nodes": [
+    {
+      "node_id": "128d4fdc-c130-40c1-a3a4-6ced4b36fc0e",
+      "type": "SOURCE",
+      "operator": "sagemaker.s3_source_0.1",
+      "parameters": {
+        "dataset_definition": {
+          "__typename": "S3CreateDatasetDefinitionOutput",
+          "datasetSourceType": "S3",
+          "name": "yum-yum-icecream.csv",
+          "description": null,
+          "s3ExecutionContext": {
+            "__typename": "S3ExecutionContext",
+            "s3Uri": "s3://sagemaker-studio-849937885130-1jhrztotarp/yum-yum-icecream.csv",
+            "s3ContentType": "csv",
+            "s3HasHeader": true,
+            "s3FieldDelimiter": ",",
+            "s3DirIncludesNested": false,
+            "s3AddsFilenameColumn": false,
+            "s3RoleArn": null
+          }
+        }
+      },
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "default",
+          "sampling": {
+            "sampling_method": "sample_by_limit",
+            "limit_rows": 50000
+          }
+        }
+      ]
+    },
+    {
+      "node_id": "d9d3190f-1f95-47e6-a3be-d896d99003a0",
+      "type": "TRANSFORM",
+      "operator": "sagemaker.spark.infer_and_cast_type_0.1",
+      "parameters": {},
+      "trained_parameters": {
+        "schema": {
+          "date": "date",
+          "ice_cream_type": "long",
+          "topping": "long",
+          "location": "long"
+        }
+      },
+      "inputs": [
+        {
+          "name": "default",
+          "node_id": "128d4fdc-c130-40c1-a3a4-6ced4b36fc0e",
+          "output_name": "default"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "default"
+        }
+      ]
+    },
+    {
+      "node_id": "96a8b5e7-bf0f-4ac8-9624-ced7526e4438",
+      "type": "TRANSFORM",
+      "operator": "sagemaker.spark.featurize_date_time_0.1",
+      "parameters": {
+        "operator": "Extract columns",
+        "extract_columns_parameters": {
+          "input_column": [
+            "date"
+          ],
+          "output_mode": "Ordinal",
+          "output_format": "Columns",
+          "infer_datetime_format": false,
+          "date_time_format": "",
+          "year": true,
+          "month": true,
+          "day": true,
+          "hour": false,
+          "minute": false,
+          "second": false,
+          "week_of_year": false,
+          "day_of_year": false,
+          "quarter": false,
+          "use_one_indexing": true
+        }
+      },
+      "inputs": [
+        {
+          "name": "df",
+          "node_id": "d9d3190f-1f95-47e6-a3be-d896d99003a0",
+          "output_name": "default"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "default"
+        }
+      ]
+    },
+    {
+      "node_id": "50b2174f-f651-4e49-a598-9b2efb7c832b",
+      "type": "VISUALIZATION",
+      "operator": "sagemaker.visualizations.describe_0.1",
+      "parameters": {
+        "name": "Table Summary"
+      },
+      "inputs": [
+        {
+          "name": "df",
+          "node_id": "96a8b5e7-bf0f-4ac8-9624-ced7526e4438",
+          "output_name": "default"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "default"
+        }
+      ]
+    },
+    {
+      "node_id": "c3623a72-0ba7-48a1-93d4-247df64d3ffd",
+      "type": "VISUALIZATION",
+      "operator": "sagemaker.visualizations.histogram_0.1",
+      "parameters": {
+        "name": "Histogram",
+        "x_axis": "ice_cream_type",
+        "color_by": "date"
+      },
+      "inputs": [
+        {
+          "name": "df",
+          "node_id": "96a8b5e7-bf0f-4ac8-9624-ced7526e4438",
+          "output_name": "default"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "default"
+        }
+      ]
+    }
+  ]
+}
